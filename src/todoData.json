@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "text": "할일1",
+    "checked": true
+  },
+  {
+    "id": 2,
+    "text": "할일2",
+    "checked": false
+  },
+  {
+    "id": 3,
+    "text": "할일3",
+    "checked": false
+  },
+  {
+    "id": 4,
+    "text": "할일4",
+    "checked": false
+  }
+]
