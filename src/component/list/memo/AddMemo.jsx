@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Button from "../../common/Button";
 import TextComponent from "../../common/TextComponent";
-import { createNextId } from "../../../utils/helpers";
+import { memoApi } from "../../../api/index.js";
 
 const Wrapper = styled.div`
   padding: 16px;
@@ -26,12 +26,10 @@ function AddMemo(props) {
       alert("글을 입력하세요");
       return;
     }
-
-    setMemos((prevMemos) => [
-      ...prevMemos,
-      { id: createNextId(prevMemos), memo: memoText },
-    ]);
-
+    memoApi.create({ memo: memoText });
+    memoApi.fetch().then((data) => {
+      setMemos(data);
+    });
     setMemo("");
   };
   return (

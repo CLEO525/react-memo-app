@@ -1,12 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import MemoListItem from "./MemoListItem";
 import AddMemo from "./AddMemo";
-import memoData from "../../../memoData.json";
-
-// const Wrapper = styled.div`
-//   width: 400px;
-// `;
+import { memoApi } from "../../../api/index.js";
 
 const Container = styled.div`
   width: 100%;
@@ -27,8 +23,28 @@ const StyledDiv = styled.div`
 `;
 
 function MemoList(props) {
-  //const navigate = useNavigate();
-  const [memos, setMemos] = useState(memoData);
+  const [memos, setMemos] = useState([]);
+  const [loading, setLoading] = useState();
+  const [error, setError] = useState(undefined);
+
+  useEffect(() => {
+    setLoading(true);
+    memoApi
+      .fetch() //
+      .then((data) => {
+        setMemos(data);
+      })
+      .catch((e) => setError(e))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error.toString()}</div>;
+  }
 
   return (
     <Container>

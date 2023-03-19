@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../../common/Button";
-import { createNextId } from "../../../utils/helpers";
+import { todoApi } from "../../../api";
 
 const StyledInputText = styled.input`
   width: 350px;
@@ -15,24 +15,25 @@ const StyledForm = styled.form`
 `;
 
 export default function AddTodo(props) {
-  const [text, setText] = useState("");
+  const [todo, setTodo] = useState("");
   const { setTodos } = props;
 
-  const handleClick = () => {
-    const todoText = text.trim();
+  const handleClick = async () => {
+    const todoText = todo.trim();
     if (!todoText) {
-      alert("입력");
+      alert("글을 입력하세요");
       return;
     }
-    setTodos((prevTodos) => [
-      ...prevTodos,
-      { id: createNextId(prevTodos), text: todoText, checked: false },
-    ]);
+    await todoApi.create({ todo: todoText, checked: false });
+    const data = await todoApi.fetch();
+    setTodos(data);
+
+    setTodo("");
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setText("");
+    setTodo("");
   };
 
   return (
@@ -40,10 +41,10 @@ export default function AddTodo(props) {
       <StyledInputText
         type="text"
         placeholder="할일 입력"
-        value={text}
         onChange={(e) => {
-          setText(e.target.value);
+          setTodo(e.target.value);
         }}
+        value={todo}
       />
       <Button type="button" onClick={handleClick} title="+" />
     </StyledForm>

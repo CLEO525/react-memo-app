@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import AddTodo from "./AddTodo";
 import TodoListItem from "./TodoListItem";
-import todoData from "../../../todoData.json";
+//import todoData from "../../../todoData.json";
+import { todoApi } from "../../../api/index.js";
 
 const Wrapper = styled.div`
   width: 450px;
@@ -34,7 +35,28 @@ const StyledList = styled.li`
 `;
 
 function TodoList(props) {
-  const [todos, setTodos] = useState(todoData);
+  const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState();
+  const [error, setError] = useState(undefined);
+
+  useEffect(() => {
+    setLoading(true);
+    todoApi
+      .fetch() //
+      .then((data) => {
+        setTodos(data);
+      })
+      .catch((e) => setError(e))
+      .finally(() => setLoading(false));
+  }, []); //화면에 처음 랜더링 될때만 실행
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error.toString()}</div>;
+  }
 
   return (
     <Wrapper>

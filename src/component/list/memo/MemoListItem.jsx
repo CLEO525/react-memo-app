@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { memoApi } from "../../../api";
 
 const Wrapper = styled.div`
   width: 700px;
@@ -46,9 +47,13 @@ function MemoListItem(props) {
   const { memo, setMemos } = props;
 
   const handleClick = () => {
-    setMemos((prevMemos) =>
-      prevMemos.filter((prevMemo) => prevMemo.id !== memo.id),
-    );
+    // setMemos((prevMemos) =>
+    //   prevMemos.filter((prevMemo) => prevMemo.id !== memo.id),
+    // );
+    memoApi.destroy(memo.id);
+    memoApi.fetch().then((data) => {
+      setMemos(data);
+    });
   };
 
   return (

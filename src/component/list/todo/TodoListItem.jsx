@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { todoApi } from "../../../api";
 
 const Wrapper = styled.div`
   display: flex;
@@ -35,8 +36,10 @@ const StyledButton = styled.button`
 
 function TodoListItem(props) {
   const { todo, setTodos } = props;
+  const [textType, setTextType] = useState("hidden");
+  const [updateText, setUpdateText] = useState(todo.todo);
 
-  const handleCheck = () => {
+  const handleCheck = async () => {
     setTodos((prevTodos) => {
       return prevTodos.map((prevTodo) => {
         return prevTodo.id === todo.id
@@ -44,12 +47,33 @@ function TodoListItem(props) {
           : prevTodo;
       });
     });
+
+    await todoApi.update(todo.id, { todo: todo.todo, checked: !todo.checked });
+    const data = await todoApi.fetch();
+    setTodos(data);
   };
 
-  const handleClick = () => {
-    setTodos((prevTodos) =>
-      prevTodos.filter((prevTodo) => prevTodo.id !== todo.id),
-    );
+  const handleChange = (e) => {
+    setUpdateText(e.target.value);
+  };
+
+  const handleClick = async () => {
+    // setTodos((prevTodos) =>
+    //   prevTodos.filter((prevTodo) => prevTodo.id !== todo.id),
+    // );
+    await todoApi.destroy(todo.id);
+    const data = await todoApi.fetch();
+    setTodos(data);
+  };
+
+  const handleUpdateClick = async () => {
+    textType === "hidden" ? setTextType("text") : setTextType("hidden");
+    await todoApi.update(todo.id, { todo: updateText, checked: todo.checked });
+    // todoApi.fetch().then((data) => {
+    //   setTodos(data);
+    // });
+    const data = await todoApi.fetch();
+    setTodos(data);
   };
 
   return (
@@ -61,7 +85,9 @@ function TodoListItem(props) {
           id={todo.id}
           onChange={handleCheck}
         />
-        <label htmlFor={todo.id}>{todo.text}</label>
+        <label htmlFor={todo.id}>{todo.todo}</label>
+        <button onClick={handleUpdateClick}>✏️</button>
+        <input type={textType} value={updateText} onChange={handleChange} />
         <StyledButton onClick={handleClick}>&times;</StyledButton>
       </ContentText>
     </Wrapper>
